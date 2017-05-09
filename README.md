@@ -42,6 +42,7 @@ There are many ways to do this:
 
     ```javascript
     import SamsungHealth from 'react-native-samsung-health'
+    
     SamsungHealth.authorize((err, res) => {
       if (res) {
         let opt = {};
@@ -54,6 +55,7 @@ There are many ways to do this:
     ```
 
 ## Modify/Build the Project in Android Studio
-    * Start `Android Studio` and select `File -> New -> Import Project` and select the **android** folder of this package.
-    * If you get a `Plugin with id 'android-library' not found` Error, install `android support repository`.
-    * If you get asked to upgrade _gradle_ to a new version, you can skip it.
+
+* Start `Android Studio` and select `File -> New -> Import Project` and select the **android** folder of this package.
+* If you get a `Plugin with id 'android-library' not found` Error, install `android support repository`.
+ * If you get asked to upgrade _gradle_ to a new version, you can skip it.
