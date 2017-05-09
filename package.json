@@ -1,0 +1,18 @@
+{
+  "name": "react-native-samsung-health",
+  "version": "0.0.1",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cellihealth/react-native-samsung-health.git"
+  },
+  "keywords": [
+    "react-native",
+    "samsung-health",
+    "android",
+    "library"
+  ],
+  "peerDependencies": {
+    "react-native": "^0.43.2"
+  }
+}
