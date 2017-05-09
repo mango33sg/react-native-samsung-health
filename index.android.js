@@ -19,6 +19,7 @@ class RNSamsungHealth {
   getDailyStepCountSamples(options, callback) {
     console.log("getDailyStepCounts");
 
+    console.log("startDate:" + options.startDate);
     let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
     let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
     console.log("startDate:" + startDate);

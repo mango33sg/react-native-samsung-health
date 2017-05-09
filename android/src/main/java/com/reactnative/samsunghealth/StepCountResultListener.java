@@ -124,8 +124,8 @@ public class StepCountResultListener implements
                     WritableMap map = Arguments.createMap();
 
                     long t_offset = c.getLong(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET));
-                    long t_start = t_offset + c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME));
-                    long t_end = t_offset + c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME));
+                    long t_start = c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME));
+                    long t_end = c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME));
 
                     Date dt_start = new Date(t_start);
                     Date dt_end = new Date(t_end);
@@ -134,6 +134,7 @@ public class StepCountResultListener implements
 
                     map.putDouble("start_ts", (double)t_start);
                     map.putDouble("end_ts", (double)t_end);
+                    map.putDouble("offset_ts", (double)t_offset);
 
                     map.putString("start", dt_format.format(dt_start));
                     map.putString("end", dt_format.format(dt_end));
