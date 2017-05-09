@@ -2,6 +2,7 @@
   "name": "react-native-samsung-health",
   "version": "0.0.1",
   "private": false,
+  "license": "Unlicense",
   "repository": {
     "type": "git",
     "url": "https://github.com/cellihealth/react-native-samsung-health.git"
