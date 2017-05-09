@@ -17,9 +17,21 @@ class RNSamsungHealth {
   }
 
   getDailyStepCountSamples(options, callback) {
-    samsungHealth.readStepCount(
+    console.log("getDailyStepCounts");
+
+    let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
+    let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
+    console.log("startDate:" + startDate);
+    console.log("endDate:" + endDate);
+    samsungHealth.readStepCount(startDate, endDate,
       (msg) => { callback(msg, false); },
-      (res) => { callback(false, res); }
+      (res) => {
+          if (res.length>0) {
+              callback(false, res);
+          } else {
+              callback("There is no any steps data for this period", false);
+          }
+      }
     );
   }
 

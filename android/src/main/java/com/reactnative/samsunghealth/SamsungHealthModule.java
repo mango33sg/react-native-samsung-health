@@ -178,14 +178,16 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
 
     // Read the today's step count on demand
     @ReactMethod
-    private void readStepCount(Callback error, Callback success) {
+    public void readStepCount(double startDate, double endDate, Callback error, Callback success) {
         HealthDataResolver resolver = new HealthDataResolver(mStore, null);
 
-        // Set time range from start time of today to the current time
-        long startTime = getStartTimeOfToday() - ( 7 * 24 * 60 * 60 * 1000 );
-        long endTime = System.currentTimeMillis();
-        Filter filter = Filter.and(Filter.greaterThanEquals(HealthConstants.StepCount.START_TIME, startTime),
-                Filter.lessThanEquals(HealthConstants.StepCount.START_TIME, endTime));
+        Log.d(REACT_MODULE, "startDate:" + String.valueOf(startDate));
+        Log.d(REACT_MODULE, "endDate:" + String.valueOf(endDate));
+
+        Filter filter = Filter.and(Filter.
+                greaterThanEquals(HealthConstants.StepCount.START_TIME, (long)startDate),
+                Filter.lessThanEquals(HealthConstants.StepCount.START_TIME, (long)endDate)
+                );
 
         HealthDataResolver.ReadRequest request = new ReadRequest.Builder()
                 .setDataType(HealthConstants.StepCount.HEALTH_DATA_TYPE)

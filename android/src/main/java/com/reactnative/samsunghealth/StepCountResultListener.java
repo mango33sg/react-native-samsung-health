@@ -44,6 +44,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.Date;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class StepCountResultListener implements
     HealthResultHolder.ResultListener<ReadResult>
@@ -118,9 +123,21 @@ public class StepCountResultListener implements
 
                     WritableMap map = Arguments.createMap();
 
-                    map.putString("offset", c.getString(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET)));
-                    map.putString("start", c.getString(c.getColumnIndex(HealthConstants.StepCount.START_TIME)));
-                    map.putString("end", c.getString(c.getColumnIndex(HealthConstants.StepCount.END_TIME)));
+                    long t_offset = c.getLong(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET));
+                    long t_start = t_offset + c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME));
+                    long t_end = t_offset + c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME));
+
+                    Date dt_start = new Date(t_start);
+                    Date dt_end = new Date(t_end);
+                    DateFormat dt_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    dt_format.setTimeZone(TimeZone.getDefault());
+
+                    map.putDouble("start_ts", (double)t_start);
+                    map.putDouble("end_ts", (double)t_end);
+
+                    map.putString("start", dt_format.format(dt_start));
+                    map.putString("end", dt_format.format(dt_end));
+
                     map.putInt("step", c.getInt(c.getColumnIndex(HealthConstants.StepCount.COUNT)));
 
                     map.putString("deviceName", deviceName);
