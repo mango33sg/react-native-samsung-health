@@ -66,14 +66,57 @@ public class StepCountResultListener implements
         mModule = module;
     }
 
+    private WritableMap getDeviceInfo(String uuid)
+    {
+        WritableMap map = Arguments.createMap();
+        HealthDeviceManager deviceManager = new HealthDeviceManager(mModule.getStore());
+        HealthDevice device = deviceManager.getDeviceByUuid(uuid);
+
+        String deviceName = device.getCustomName();
+        String deviceManufacturer = device.getManufacturer();
+        String deviceModel = device.getModel();
+        Integer deviceGroup = device.getGroup();
+        String groupName = "";
+
+        if (deviceName == null) {
+            deviceName = "";
+        }
+
+        if (deviceManufacturer == null) {
+            deviceManufacturer = "";
+        }
+
+        if (deviceModel == null) {
+            deviceModel = "";
+        }
+
+        switch(deviceGroup){
+            case HealthDevice.GROUP_MOBILE:
+                groupName = "mobileDevice";
+                break;
+            case HealthDevice.GROUP_EXTERNAL:
+                groupName = "peripheral";
+                break;
+            case HealthDevice.GROUP_COMPANION:
+                groupName = "wearable";
+                break;
+            case HealthDevice.GROUP_UNKNOWN:
+                groupName = "unknown";
+                break;
+        }
+
+        map.putString("name", deviceName);
+        map.putString("manufacturer", deviceManufacturer);
+        map.putString("model", deviceModel);
+        map.putString("group", groupName);
+        return map;
+    }
+
     @Override
     public void onResult(ReadResult result) {
-        WritableArray resultSet = Arguments.createArray();
-        //String resultSet = "[";
+        Map<String, WritableArray> devices = new HashMap<>();
 
         Cursor c = null;
-
-        HealthDeviceManager deviceManager = new HealthDeviceManager(mModule.getStore());
 
         try {
             c = result.getResultCursor();
@@ -81,45 +124,15 @@ public class StepCountResultListener implements
             Log.d(REACT_MODULE, "Column Names" + Arrays.toString(c.getColumnNames()));
 
             if (c != null) {
-                String deviceName = "";
-                String deviceManufacturer = "";
-                String deviceModel = "";
-                String groupName="";
-                Integer deviceGroup;
                 byte[] dataText = null;
 
                 while (c.moveToNext()) {
-
-                    deviceName = deviceManager.getDeviceByUuid(c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID))).getCustomName();
-                    deviceManufacturer = deviceManager.getDeviceByUuid(c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID))).getManufacturer();
-                    deviceModel = deviceManager.getDeviceByUuid(c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID))).getModel();
-                    deviceGroup = deviceManager.getDeviceByUuid(c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID))).getGroup();
-
-                    if (deviceName == null) {
-                        deviceName = "";
+                    String uuid = c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID));
+                    if (!devices.containsKey(uuid)) {
+                        devices.put(uuid, Arguments.createArray());
                     }
 
-                    if (deviceManufacturer == null) {
-                        deviceManufacturer = "";
-                    }
-
-                    if (deviceModel == null) {
-                        deviceModel = "";
-                    }
-                    switch(deviceGroup){
-                        case HealthDevice.GROUP_MOBILE:
-                            groupName = "mobileDevice";
-                            break;
-                        case HealthDevice.GROUP_EXTERNAL:
-                            groupName = "peripheral";
-                            break;
-                        case HealthDevice.GROUP_COMPANION:
-                            groupName = "wearable";
-                            break;
-                        case HealthDevice.GROUP_UNKNOWN:
-                            groupName = "unknown";
-                            break;
-                    }
+                    WritableArray resultSet = devices.get(uuid);
 
                     WritableMap map = Arguments.createMap();
 
@@ -127,24 +140,19 @@ public class StepCountResultListener implements
                     long t_start = c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME));
                     long t_end = c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME));
 
-                    Date dt_start = new Date(t_start);
-                    Date dt_end = new Date(t_end);
-                    DateFormat dt_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                    dt_format.setTimeZone(TimeZone.getDefault());
+                    //Date dt_start = new Date(t_start);
+                    //Date dt_end = new Date(t_end);
+                    //DateFormat dt_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                    //dt_format.setTimeZone(TimeZone.getDefault());
 
-                    map.putDouble("start_ts", (double)t_start);
-                    map.putDouble("end_ts", (double)t_end);
-                    map.putDouble("offset_ts", (double)t_offset);
+                    map.putDouble("start", (double)t_start);
+                    map.putDouble("end", (double)t_end);
+                    map.putDouble("offset", (double)t_offset);
 
-                    map.putString("start", dt_format.format(dt_start));
-                    map.putString("end", dt_format.format(dt_end));
+                    //map.putString("start", dt_format.format(dt_start));
+                    //map.putString("end", dt_format.format(dt_end));
 
                     map.putInt("step", c.getInt(c.getColumnIndex(HealthConstants.StepCount.COUNT)));
-
-                    map.putString("deviceName", deviceName);
-                    map.putString("deviceManufacturer", deviceManufacturer);
-                    map.putString("deviceModel", deviceModel);
-                    map.putString("deviceGroup", groupName);
 
                     resultSet.pushMap(map);
                 }
@@ -162,10 +170,17 @@ public class StepCountResultListener implements
                 c.close();
             }
         }
-        //resultSet += "]";
+
+        WritableArray results = Arguments.createArray();
+        for(Map.Entry<String, WritableArray> entry: devices.entrySet()) {
+            WritableMap map = Arguments.createMap();
+            map.putMap("source", getDeviceInfo(entry.getKey()));
+            map.putArray("steps", entry.getValue());
+            results.pushMap(map);
+        }
 
         Log.d(REACT_MODULE, "Steps Results");
-        mSuccessCallback.invoke(resultSet);
+        mSuccessCallback.invoke(results);
     }
 }
 
