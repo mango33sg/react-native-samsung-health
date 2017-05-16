@@ -38,11 +38,20 @@ There are many ways to do this:
             }
         }
         ```
+    * Add permission in `android/app/src/main/AndroidManifest.xml`:
+        ```xml
+        <application
+
+        <meta-data
+          android:name="com.samsung.android.health.permission.read"
+          android:value="com.samsung.health.step_count" />
+        ```
+
 3. Simply `import/require` it by the name defined in your library's `package.json`:
 
     ```javascript
     import SamsungHealth from 'react-native-samsung-health'
-    
+
     SamsungHealth.authorize((err, res) => {
       if (res) {
         let opt = {};

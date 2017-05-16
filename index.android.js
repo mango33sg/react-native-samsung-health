@@ -16,6 +16,10 @@ class RNSamsungHealth {
     );
   }
 
+  stop() {
+    samsungHealth.disconnect();
+  }
+
   getDailyStepCountSamples(options, callback) {
     console.log("getDailyStepCounts");
 
@@ -53,7 +57,7 @@ class RNSamsungHealth {
   {
       results = {}
       for(var step of steps) {
-          var date = new Date(step.start);
+          var date = new Date(step.start_time);
 
           var day = ("0" + date.getDate()).slice(-2);
           var month = ("0" + (date.getMonth()+1)).slice(-2);
@@ -64,7 +68,7 @@ class RNSamsungHealth {
               results[dateFormatted] = 0;
           }
 
-          results[dateFormatted] += step.step;
+          results[dateFormatted] += step.count;
       }
 
       results2 = [];

@@ -98,7 +98,7 @@ public class ConnectionListener implements
     @Override
     public void onDisconnected() {
         Log.d(REACT_MODULE, "Health data service is disconnected.");
-        mErrorCallback.invoke("Health data service is disconnected.");
+        //mErrorCallback.invoke("Health data service is disconnected.");
     }
 };
 /* vim :set ts=4 sw=4 sts=4 et : */

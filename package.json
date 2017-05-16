@@ -1,11 +1,15 @@
 {
   "name": "react-native-samsung-health",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": false,
   "license": "Unlicense",
+  "main": "index.android.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cellihealth/react-native-samsung-health.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "react-native",
@@ -13,7 +17,5 @@
     "android",
     "library"
   ],
-  "peerDependencies": {
-    "react-native": "^0.43.2"
-  }
+  "author": "Cellihealth Pte Ltd"
 }

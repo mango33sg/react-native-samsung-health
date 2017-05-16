@@ -144,7 +144,9 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
     public void disconnect()
     {
         if (mStore != null) {
+            Log.d(REACT_MODULE, "disconnectService");
             mStore.disconnectService();
+            mStore = null;
         }
     }
 

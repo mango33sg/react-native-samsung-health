@@ -136,23 +136,14 @@ public class StepCountResultListener implements
 
                     WritableMap map = Arguments.createMap();
 
-                    long t_offset = c.getLong(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET));
-                    long t_start = c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME));
-                    long t_end = c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME));
-
-                    //Date dt_start = new Date(t_start);
-                    //Date dt_end = new Date(t_end);
-                    //DateFormat dt_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                    //dt_format.setTimeZone(TimeZone.getDefault());
-
-                    map.putDouble("start", (double)t_start);
-                    map.putDouble("end", (double)t_end);
-                    map.putDouble("offset", (double)t_offset);
-
-                    //map.putString("start", dt_format.format(dt_start));
-                    //map.putString("end", dt_format.format(dt_end));
-
-                    map.putInt("step", c.getInt(c.getColumnIndex(HealthConstants.StepCount.COUNT)));
+                    map.putDouble(HealthConstants.StepCount.START_TIME,
+                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME)));
+                    map.putDouble(HealthConstants.StepCount.END_TIME,
+                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME)));
+                    map.putDouble(HealthConstants.StepCount.TIME_OFFSET,
+                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET)));
+                    map.putInt(HealthConstants.StepCount.COUNT,
+                        c.getInt(c.getColumnIndex(HealthConstants.StepCount.COUNT)));
 
                     resultSet.pushMap(map);
                 }
