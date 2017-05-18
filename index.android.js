@@ -25,6 +25,7 @@ class RNSamsungHealth {
 
     let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
     let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
+    let mergeData = options.mergeData != undefined ? options.mergeData : true;
 
     //console.log("startDate:" + startDate);
     //console.log("endDate:" + endDate);
@@ -35,14 +36,17 @@ class RNSamsungHealth {
       (msg) => { callback(msg, false); },
       (res) => {
           if (res.length>0) {
-              callback(false, res.map(function(dev) {
+              var resData = res.map(function(dev) {
                   var obj = {};
                   obj.source = dev.source.name;
                   obj.steps = this.buildDailySteps(dev.steps);
                   obj.sourceDetail = dev.source;
                   return obj;
-                }, this)
-              );
+                }, this);
+
+              if (mergeData) resData = this.mergeResult(resData);
+
+              callback(false, resData);
           } else {
               callback("There is no any steps data for this period", false);
           }
@@ -76,6 +80,49 @@ class RNSamsungHealth {
       for(var index in results) {
           results2.push({date: index, value: results[index]});
       }
+      return results2;
+  }
+
+  mergeResult(res)
+  {
+      results = {}
+      for(var dev of res)
+      {
+          if (!(dev.sourceDetail.group in results)) {
+              results[dev.sourceDetail.group] = {
+                  source: dev.source,
+                  sourceDetail: { group: dev.sourceDetail.group },
+                  stepsDate: {}
+              };
+          }
+
+          let group = results[dev.sourceDetail.group];
+
+          for (var step of dev.steps) {
+              if (!(step.date in group.stepsDate)) {
+                  group.stepsDate[step.date] = 0;
+              }
+
+              group.stepsDate[step.date] += step.value;
+          }
+      }
+
+      results2 = [];
+      for(var index in results) {
+          let group = results[index];
+          var steps = [];
+          for(var date in group.stepsDate) {
+              steps.push({
+                date: date,
+                value: group.stepsDate[date]
+              });
+          }
+          group.steps = steps.sort((a,b) => a.date < b.date ? -1 : 1);
+          delete group.stepsDate;
+
+          results2.push(group);
+      }
+
       return results2;
   }
 
