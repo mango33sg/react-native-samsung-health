@@ -25,11 +25,11 @@ class RNSamsungHealth {
 
     let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
     let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
-    console.log("startDate:" + startDate);
-    console.log("endDate:" + endDate);
 
-    console.log("startDate2:" + (new Date(startDate)).toLocaleString());
-    console.log("endDate2:" + (new Date(endDate)).toLocaleString());
+    //console.log("startDate:" + startDate);
+    //console.log("endDate:" + endDate);
+    //console.log("startDate2:" + (new Date(startDate)).toLocaleString());
+    //console.log("endDate2:" + (new Date(endDate)).toLocaleString());
 
     samsungHealth.readStepCount(startDate, endDate,
       (msg) => { callback(msg, false); },
@@ -39,6 +39,7 @@ class RNSamsungHealth {
                   var obj = {};
                   obj.source = dev.source.name;
                   obj.steps = this.buildDailySteps(dev.steps);
+                  obj.sourceDetail = dev.source;
                   return obj;
                 }, this)
               );

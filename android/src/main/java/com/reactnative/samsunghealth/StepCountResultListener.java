@@ -72,6 +72,7 @@ public class StepCountResultListener implements
         HealthDeviceManager deviceManager = new HealthDeviceManager(mModule.getStore());
         HealthDevice device = deviceManager.getDeviceByUuid(uuid);
 
+
         String deviceName = device.getCustomName();
         String deviceManufacturer = device.getManufacturer();
         String deviceModel = device.getModel();
@@ -105,10 +106,13 @@ public class StepCountResultListener implements
                 break;
         }
 
+        Log.d(REACT_MODULE, "Device: " + uuid + " Name: " + deviceName + " Model: " + deviceModel);
+
         map.putString("name", deviceName);
         map.putString("manufacturer", deviceManufacturer);
         map.putString("model", deviceModel);
         map.putString("group", groupName);
+        map.putString("uuid", uuid);
         return map;
     }
 
