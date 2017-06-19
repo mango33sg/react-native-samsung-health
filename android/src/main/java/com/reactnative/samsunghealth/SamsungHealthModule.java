@@ -78,14 +78,6 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
     }
 
     @Override
-    public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<>();
-        constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
-        constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
-        return constants;
-    }
-
-    @Override
     public void onHostResume() {
     }
 
@@ -95,12 +87,6 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
 
     @Override
     public void onHostDestroy() {
-    }
-
-    @ReactMethod
-    public void show(String message, int duration) {
-        Log.d(REACT_MODULE, "Pencet Toast");
-        Toast.makeText(getReactApplicationContext(), message, duration).show();
     }
 
     private void sendEvent(String eventName,
