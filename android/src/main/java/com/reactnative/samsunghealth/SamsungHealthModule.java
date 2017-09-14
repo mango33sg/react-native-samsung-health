@@ -58,6 +58,7 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
     private static final String DURATION_LONG_KEY = "LONG";
 
     private HealthDataStore mStore;
+    public Set<PermissionKey> mKeySet;
 
 
     public SamsungHealthModule(ReactApplicationContext reactContext) {
@@ -120,9 +121,22 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void connect(Callback error, Callback success)
     {
-        // Create a HealthDataStore instance and set its listener
-        mStore = new HealthDataStore(getReactApplicationContext(), new ConnectionListener(this, error, success));
-        // Request the connection to the health data store
+        mKeySet = new HashSet<PermissionKey>();
+        mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
+        if (mStore == null) {
+            error.invoke("status permission is false");
+            // mStore = new HealthDataStore(getReactApplicationContext(), new ConnectionListener(this, null, success));
+        }
+        HealthPermissionManager pmsManager = new HealthPermissionManager(mStore);
+        pmsManager.requestPermissions(mKeySet, this.getContext().getCurrentActivity()).setResultListener(
+            new PermissionListener(this, error, success)
+        );
+    }
+
+    @ReactMethod
+    public void statusPermission(Callback success)
+    {
+        mStore = new HealthDataStore(getReactApplicationContext(), new ConnectionListener(this, null, success));
         mStore.connectService();
     }
 
@@ -135,23 +149,6 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
             mStore = null;
         }
     }
-
-    /*
-    private final HealthDataObserver mObserver = new HealthDataObserver(null) {
-        // Update the step count when a change event is received
-        @Override
-        public void onChange(String dataTypeName) {
-            Log.d(REACT_MODULE, "Observer receives a data changed event");
-            readStepCount();
-        }
-    };
-
-    private void start() {
-        // Register an observer to listen changes of step count and get today step count
-        // HealthDataObserver.addObserver(mStore, HealthConstants.StepCount.HEALTH_DATA_TYPE, mObserver);
-        readStepCount();
-    }
-     */
 
     private long getStartTimeOfToday() {
         Calendar today = Calendar.getInstance();
