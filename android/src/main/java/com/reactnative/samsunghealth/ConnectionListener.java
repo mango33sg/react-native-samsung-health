@@ -66,21 +66,13 @@ public class ConnectionListener implements
     public void onConnected() {
         Log.d(REACT_MODULE, "Health data service is connected.");
         HealthPermissionManager pmsManager = new HealthPermissionManager(mModule.getStore());
-
-      mKeySet = new HashSet<PermissionKey>();
-      mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
+        mKeySet = new HashSet<PermissionKey>();
+        mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
         try {
-            // Check whether the permissions that this application needs are acquired
             Map<PermissionKey, Boolean> resultMap = pmsManager.isPermissionAcquired(mKeySet);
-
             if (resultMap.containsValue(Boolean.FALSE)) {
-                // Request the permission for reading step counts if it is not acquired
-                pmsManager.requestPermissions(mKeySet, mModule.getContext().getCurrentActivity()).setResultListener(
-                    new PermissionListener(mModule, mErrorCallback, mSuccessCallback)
-                );
+                mSuccessCallback.invoke(false);
             } else {
-                // Get the current step count and display it
-                Log.d(REACT_MODULE, "COUNT THE STEPS!");
                 mSuccessCallback.invoke(true);
             }
         } catch (Exception e) {
@@ -98,7 +90,6 @@ public class ConnectionListener implements
     @Override
     public void onDisconnected() {
         Log.d(REACT_MODULE, "Health data service is disconnected.");
-        //mErrorCallback.invoke("Health data service is disconnected.");
     }
 };
 /* vim :set ts=4 sw=4 sts=4 et : */

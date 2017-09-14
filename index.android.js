@@ -1,4 +1,4 @@
-import { 
+import {
   NativeModules,
   DeviceEventEmitter
 } from 'react-native';
@@ -14,6 +14,12 @@ class RNSamsungHealth {
       (msg) => { callback(msg, false); },
       (res) => { callback(false, res); }
     );
+  }
+
+  statusPermission(callback) {
+    samsungHealth.statusPermission((res) => {
+      callback(res);
+    });
   }
 
   stop() {
