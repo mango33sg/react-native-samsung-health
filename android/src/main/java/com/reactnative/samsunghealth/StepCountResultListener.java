@@ -72,11 +72,11 @@ public class StepCountResultListener implements
         HealthDeviceManager deviceManager = new HealthDeviceManager(mModule.getStore());
         HealthDevice device = deviceManager.getDeviceByUuid(uuid);
 
+        String deviceName = device == null ? null : device.getCustomName();
+        String deviceManufacturer = device == null ? null : device.getManufacturer();
+        String deviceModel = device == null ? null : device.getModel();
+        Integer deviceGroup = device == null ? HealthDevice.GROUP_UNKNOWN : device.getGroup();
 
-        String deviceName = device.getCustomName();
-        String deviceManufacturer = device.getManufacturer();
-        String deviceModel = device.getModel();
-        Integer deviceGroup = device.getGroup();
         String groupName = "";
 
         if (deviceName == null) {
@@ -106,7 +106,7 @@ public class StepCountResultListener implements
                 break;
         }
 
-        Log.d(REACT_MODULE, "Device: " + uuid + " Name: " + deviceName + " Model: " + deviceModel);
+        Log.d(REACT_MODULE, "Device: " + uuid + " Name: " + deviceName + " Model: " + deviceModel + " Group: " + groupName);
 
         map.putString("name", deviceName);
         map.putString("manufacturer", deviceManufacturer);
