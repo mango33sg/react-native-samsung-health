@@ -5,6 +5,8 @@ import android.util.Log;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -50,6 +52,7 @@ public class ConnectionListener implements
     private Callback mSuccessCallback;
     private Callback mErrorCallback;
     private SamsungHealthModule mModule;
+    private HealthConnectionErrorResult mConnError;
 
     private static final String REACT_MODULE = "RNSamsungHealth";
 
@@ -91,8 +94,47 @@ public class ConnectionListener implements
 
     @Override
     public void onConnectionFailed(HealthConnectionErrorResult error) {
-        Log.d(REACT_MODULE, "Health data service is not available.");
-        mErrorCallback.invoke("Health data service is not available.");
+        AlertDialog.Builder alert = new AlertDialog.Builder(mModule.getContext().getCurrentActivity());
+        mConnError = error;
+        String message = "Connection with Samsung Health is not available";
+
+        if (error.hasResolution()) {
+          switch(error.getErrorCode()) {
+            case HealthConnectionErrorResult.PLATFORM_NOT_INSTALLED:
+                message = "Please install Samsung Health";
+                break;
+            case HealthConnectionErrorResult.OLD_VERSION_PLATFORM:
+                message = "Please upgrade Samsung Health";
+                break;
+            case HealthConnectionErrorResult.PLATFORM_DISABLED:
+                message = "Please enable Samsung Health";
+                break;
+            case HealthConnectionErrorResult.USER_AGREEMENT_NEEDED:
+                message = "Please agree with Samsung Health policy";
+                break;
+            default:
+                message = "Please make Samsung Health available";
+                break;
+            }
+        }
+
+        alert.setMessage(message);
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                if (mConnError.hasResolution()) {
+                    mConnError.resolve(mModule.getContext().getCurrentActivity());
+                }
+            }
+        });
+
+        if (error.hasResolution()) {
+            alert.setNegativeButton("Cancel", null);
+        }
+
+        alert.show();
+        //mErrorCallback.invoke(message);
     }
 
     @Override
