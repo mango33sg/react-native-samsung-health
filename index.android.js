@@ -60,9 +60,11 @@ class RNSamsungHealth {
 
   buildDailySteps(steps)
   {
+          console.log(steps);
+
       results = {}
       for(var step of steps) {
-          var date = new Date(step.start_time);
+          var date = step.start_time !== undefined ? new Date(step.start_time) : new Date(step.day_time);
 
           var day = ("0" + date.getDate()).slice(-2);
           var month = ("0" + (date.getMonth()+1)).slice(-2);

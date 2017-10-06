@@ -129,6 +129,8 @@ public class StepCountResultListener implements
 
             if (c != null) {
                 byte[] dataText = null;
+                long r = 0;
+                int col;
 
                 while (c.moveToNext()) {
                     String uuid = c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID));
@@ -140,18 +142,36 @@ public class StepCountResultListener implements
 
                     WritableMap map = Arguments.createMap();
 
-                    map.putDouble(HealthConstants.StepCount.START_TIME,
-                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.START_TIME)));
-                    map.putDouble(HealthConstants.StepCount.END_TIME,
-                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.END_TIME)));
-                    map.putDouble(HealthConstants.StepCount.TIME_OFFSET,
-                        (double)c.getLong(c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET)));
-                    map.putInt(HealthConstants.StepCount.COUNT,
-                        c.getInt(c.getColumnIndex(HealthConstants.StepCount.COUNT)));
+                    col = c.getColumnIndex(SamsungHealthModule.DAY_TIME);
+                    if (col > -1) {
+                        map.putDouble(SamsungHealthModule.DAY_TIME, (double)c.getLong(col));
+                    }
+
+                    col = c.getColumnIndex(HealthConstants.StepCount.START_TIME);
+                    if (col > -1) {
+                        map.putDouble(HealthConstants.StepCount.START_TIME, (double)c.getLong(col));
+                    }
+
+                    col = c.getColumnIndex(HealthConstants.StepCount.END_TIME);
+                    if (col > -1) {
+                        map.putDouble(HealthConstants.StepCount.END_TIME, (double)c.getLong(col));
+                    }
+
+                    col = c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET);
+                    if (col > -1) {
+                        map.putDouble(HealthConstants.StepCount.TIME_OFFSET, (double)c.getLong(col));
+                    }
+
+                    col = c.getColumnIndex(HealthConstants.StepCount.COUNT);
+                    if (col > -1) {
+                        map.putInt(HealthConstants.StepCount.COUNT, c.getInt(col));
+                    }
 
                     resultSet.pushMap(map);
+                    r++;
                 }
 
+                Log.d(REACT_MODULE, "Found rows " + Long.toString(r));
             } else {
                 Log.d(REACT_MODULE, "The cursor is null.");
             }

@@ -44,7 +44,7 @@ There are many ways to do this:
 
         <meta-data
           android:name="com.samsung.android.health.permission.read"
-          android:value="com.samsung.health.step_count" />
+          android:value="com.samsung.health.step_count;com.samsung.shealth.step_daily_trend" />
         ```
 
 3. Simply `import/require` it by the name defined in your library's `package.json`:

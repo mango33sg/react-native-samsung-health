@@ -70,8 +70,10 @@ public class ConnectionListener implements
         Log.d(REACT_MODULE, "Health data service is connected.");
         HealthPermissionManager pmsManager = new HealthPermissionManager(mModule.getStore());
 
-      mKeySet = new HashSet<PermissionKey>();
-      mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
+        mKeySet = new HashSet<PermissionKey>();
+        //mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
+        mKeySet.add(new PermissionKey(SamsungHealthModule.STEP_DAILY_TREND_TYPE, PermissionType.READ));
+
         try {
             // Check whether the permissions that this application needs are acquired
             Map<PermissionKey, Boolean> resultMap = pmsManager.isPermissionAcquired(mKeySet);
