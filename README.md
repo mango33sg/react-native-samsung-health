@@ -68,3 +68,16 @@ There are many ways to do this:
 * Start `Android Studio` and select `File -> New -> Import Project` and select the **android** folder of this package.
 * If you get a `Plugin with id 'android-library' not found` Error, install `android support repository`.
  * If you get asked to upgrade _gradle_ to a new version, you can skip it.
+ 
+## Access Data without S Health partner app certification
+
+If you want to test your app on your device but you don't have the Samsung app certification you'll see an error that looks like
+```
+java.lang.SecurityException: Denied to access by whitelist
+```
+this error is because to work with S Health you app must be certified, to prevent this error for local development you can enable the developer mode on the Samsun Healt app, go to
+
+> Settings -> About Samsung Health
+
+and tap 10 times on the app version, the name of the version will then change to 
+` *(Developer Mode)*` and you'll be able to access S Health data
