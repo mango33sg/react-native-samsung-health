@@ -21,8 +21,6 @@ class RNSamsungHealth {
   }
 
   getDailyStepCountSamples(options, callback) {
-    console.log("getDailyStepCounts");
-
     let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
     let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
     let mergeData = options.mergeData != undefined ? options.mergeData : true;
@@ -39,7 +37,7 @@ class RNSamsungHealth {
               var resData = res.map(function(dev) {
                   var obj = {};
                   obj.source = dev.source.name;
-                  obj.steps = this.buildDailySteps(dev.steps);
+                  obj.steps = this.buildDailySteps(dev.data);
                   obj.sourceDetail = dev.source;
                   return obj;
                 }, this);
@@ -54,16 +52,30 @@ class RNSamsungHealth {
     );
   }
 
+  getWeightSamples(options, callback) {
+    console.log("getWeightSamples");
+
+    let startDate = options.startDate != undefined ? Date.parse(options.startDate) : (new Date()).setHours(0,0,0,0);
+    let endDate = options.endDate != undefined ? Date.parse(options.endDate) : (new Date()).valueOf();
+
+    samsungHealth.readWeight(startDate, endDate,
+      (msg) => { callback(msg, false); },
+      (res) => {
+        // TODO: processing some
+        console.log(res);
+        callback(false, res);
+      }
+    );
+  }
+
   usubscribeListeners() {
     DeviceEventEmitter.removeAllListeners();
   }
 
-  buildDailySteps(steps)
+  buildDailySteps(data)
   {
-          console.log(steps);
-
       results = {}
-      for(var step of steps) {
+      for(var step of data) {
           var date = step.start_time !== undefined ? new Date(step.start_time) : new Date(step.day_time);
 
           var day = ("0" + date.getDate()).slice(-2);
@@ -74,7 +86,6 @@ class RNSamsungHealth {
           if (!(dateFormatted in results)) {
               results[dateFormatted] = 0;
           }
-
           results[dateFormatted] += step.count;
       }
 

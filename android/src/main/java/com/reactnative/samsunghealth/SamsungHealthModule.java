@@ -211,6 +211,34 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
             error.invoke("Getting step count fails.");
         }
     }
+
+    // Read the weight on demand
+    @ReactMethod
+    public void readWeight(double startDate, double endDate, Callback error, Callback success) {
+        HealthDataResolver resolver = new HealthDataResolver(mStore, null);
+        Filter filter = Filter.and(
+            Filter.greaterThanEquals(HealthConstants.Weight.START_TIME, (long)startDate),
+            Filter.lessThanEquals(HealthConstants.Weight.START_TIME, (long)endDate)
+        );
+        HealthDataResolver.ReadRequest request = new ReadRequest.Builder()
+                .setDataType(HealthConstants.Weight.HEALTH_DATA_TYPE) //  "com.samsung.health.weight"
+                .setProperties(new String[]{
+                        HealthConstants.Weight.WEIGHT,      // "weight"
+                        HealthConstants.Weight.START_TIME,  // DiscreteMeasurement: "start_time"
+                        HealthConstants.Weight.TIME_OFFSET, // DiscreteMeasurement: "time_offset"
+                        HealthConstants.Weight.DEVICE_UUID  // Common: "deviceuuid"
+                })
+                .setFilter(filter)
+                .build();
+
+        try {
+            resolver.read(request).setResultListener(new StepCountResultListener(this, error, success));
+        } catch (Exception e) {
+            Log.e(REACT_MODULE, e.getClass().getName() + " - " + e.getMessage());
+            Log.e(REACT_MODULE, "Getting weight fails.");
+            error.invoke("Getting weight fails.");
+        }
+    }
 }
 
 /* vim :set ts=4 sw=4 sts=4 et : */

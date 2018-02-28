@@ -59,6 +59,8 @@ public class StepCountResultListener implements
     private Callback mErrorCallback;
     private SamsungHealthModule mModule;
 
+    public static final String[] TIME_COLUMNS = {"day_time","start_time","end_time"};
+
     public StepCountResultListener(SamsungHealthModule module, Callback error, Callback success)
     {
         mSuccessCallback = success;
@@ -125,51 +127,53 @@ public class StepCountResultListener implements
         try {
             c = result.getResultCursor();
 
-            Log.d(REACT_MODULE, "Column Names" + Arrays.toString(c.getColumnNames()));
+            if (c.moveToFirst()) {
+                Log.d(REACT_MODULE, "Column Names" + Arrays.toString(c.getColumnNames()));
 
-            if (c != null) {
-                byte[] dataText = null;
                 long r = 0;
-                int col;
-
-                while (c.moveToNext()) {
-                    String uuid = c.getString(c.getColumnIndex(HealthConstants.StepCount.DEVICE_UUID));
+                do {
+                    int col_uuid = c.getColumnIndex(HealthConstants.Common.DEVICE_UUID);
+                    String uuid = c.getString(col_uuid);
                     if (!devices.containsKey(uuid)) {
                         devices.put(uuid, Arguments.createArray());
                     }
-
                     WritableArray resultSet = devices.get(uuid);
-
                     WritableMap map = Arguments.createMap();
 
-                    col = c.getColumnIndex(SamsungHealthModule.DAY_TIME);
-                    if (col > -1) {
-                        map.putDouble(SamsungHealthModule.DAY_TIME, (double)c.getLong(col));
-                    }
+                    for (int col = 0; col < c.getColumnCount(); col++) {
+                        if (col == col_uuid) continue;
 
-                    col = c.getColumnIndex(HealthConstants.StepCount.START_TIME);
-                    if (col > -1) {
-                        map.putDouble(HealthConstants.StepCount.START_TIME, (double)c.getLong(col));
-                    }
+                        String key = c.getColumnName(col);
+                        if (key == HealthConstants.Common.DEVICE_UUID) continue;
 
-                    col = c.getColumnIndex(HealthConstants.StepCount.END_TIME);
-                    if (col > -1) {
-                        map.putDouble(HealthConstants.StepCount.END_TIME, (double)c.getLong(col));
-                    }
+                        int type = c.getType(col);
+                        if (Arrays.asList(TIME_COLUMNS).contains(key)) {
+                            type = Cursor.FIELD_TYPE_FLOAT;
+                        }
 
-                    col = c.getColumnIndex(HealthConstants.StepCount.TIME_OFFSET);
-                    if (col > -1) {
-                        map.putDouble(HealthConstants.StepCount.TIME_OFFSET, (double)c.getLong(col));
-                    }
-
-                    col = c.getColumnIndex(HealthConstants.StepCount.COUNT);
-                    if (col > -1) {
-                        map.putInt(HealthConstants.StepCount.COUNT, c.getInt(col));
+                        switch (type)
+                        {
+                        case Cursor.FIELD_TYPE_BLOB:
+                            //
+                            break;
+                        case Cursor.FIELD_TYPE_FLOAT:
+                            map.putDouble(key, c.getDouble(col));
+                            break;
+                        case Cursor.FIELD_TYPE_INTEGER:
+                            map.putInt(key, c.getInt(col));
+                            break;
+                        case Cursor.FIELD_TYPE_NULL:
+                            //
+                            break;
+                        case Cursor.FIELD_TYPE_STRING:
+                        default:
+                            map.putString(key, c.getString(col));
+                        }
                     }
 
                     resultSet.pushMap(map);
                     r++;
-                }
+                } while (c.moveToNext());
 
                 Log.d(REACT_MODULE, "Found rows " + Long.toString(r));
             } else {
@@ -190,11 +194,10 @@ public class StepCountResultListener implements
         for(Map.Entry<String, WritableArray> entry: devices.entrySet()) {
             WritableMap map = Arguments.createMap();
             map.putMap("source", getDeviceInfo(entry.getKey()));
-            map.putArray("steps", entry.getValue());
+            map.putArray("data", entry.getValue());
             results.pushMap(map);
         }
 
-        Log.d(REACT_MODULE, "Steps Results");
         mSuccessCallback.invoke(results);
     }
 }
