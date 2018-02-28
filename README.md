@@ -44,7 +44,7 @@ There are many ways to do this:
 
         <meta-data
           android:name="com.samsung.android.health.permission.read"
-          android:value="com.samsung.health.step_count;com.samsung.shealth.step_daily_trend" />
+          android:value="com.samsung.health.step_count;com.samsung.shealth.step_daily_trend;com.samsung.health.weight" />
         ```
 
 3. Simply `import/require` it by the name defined in your library's `package.json`:
@@ -52,7 +52,7 @@ There are many ways to do this:
     ```javascript
     import SamsungHealth from 'react-native-samsung-health'
 
-    SamsungHealth.authorize((err, res) => {
+    SamsungHealth.authorize([ SamsungHealth.STEP_COUNT ], (err, res) => {
       if (res) {
         let opt = {};
         SamsungHealth.getDailyStepCountSamples(opt, (err, res) => {

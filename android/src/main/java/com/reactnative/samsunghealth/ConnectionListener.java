@@ -63,17 +63,24 @@ public class ConnectionListener implements
         mModule = module;
         mErrorCallback = error;
         mSuccessCallback = success;
+        mKeySet = new HashSet<PermissionKey>();
+    }
+
+    public void addReadPermission(String name)
+    {
+        mKeySet.add(new PermissionKey(name, PermissionType.READ));
     }
 
     @Override
     public void onConnected() {
+        if (mKeySet.isEmpty()) {
+            Log.e(REACT_MODULE, "Permission is empty");
+            mErrorCallback.invoke("Permission is empty");
+            return;
+        }
+
         Log.d(REACT_MODULE, "Health data service is connected.");
         HealthPermissionManager pmsManager = new HealthPermissionManager(mModule.getStore());
-
-        mKeySet = new HashSet<PermissionKey>();
-        //mKeySet.add(new PermissionKey(HealthConstants.StepCount.HEALTH_DATA_TYPE, PermissionType.READ));
-        mKeySet.add(new PermissionKey(SamsungHealthModule.STEP_DAILY_TREND_TYPE, PermissionType.READ));
-        mKeySet.add(new PermissionKey(HealthConstants.Weight.HEALTH_DATA_TYPE, PermissionType.READ));
 
         try {
             // Check whether the permissions that this application needs are acquired

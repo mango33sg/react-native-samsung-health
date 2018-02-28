@@ -1,4 +1,4 @@
-import { 
+import {
   NativeModules,
   DeviceEventEmitter
 } from 'react-native';
@@ -6,13 +6,11 @@ import {
 const samsungHealth = NativeModules.RNSamsungHealth;
 
 class RNSamsungHealth {
-  constructor() {
-  }
-
-  authorize(callback) {
+  authorize(permissions, callback) {
     samsungHealth.connect(
+      permissions,
       (msg) => { callback(msg, false); },
-      (res) => { callback(false, res); }
+      (res) => { callback(false, res); },
     );
   }
 
@@ -139,6 +137,9 @@ class RNSamsungHealth {
       return results2;
   }
 
+  STEP_COUNT = samsungHealth.STEP_COUNT;
+  WEIGHT = samsungHealth.WEIGHT;
+  STEP_DAILY_TREND = samsungHealth.STEP_DAILY_TREND;
 }
 
 export default new RNSamsungHealth();

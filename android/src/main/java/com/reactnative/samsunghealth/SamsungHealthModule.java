@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.module.annotations.ReactModule;
@@ -53,10 +54,6 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
         LifecycleEventListener {
 
     private static final String REACT_MODULE = "RNSamsungHealth";
-
-    private static final String DURATION_SHORT_KEY = "SHORT";
-    private static final String DURATION_LONG_KEY = "LONG";
-
     public static final String STEP_DAILY_TREND_TYPE = "com.samsung.shealth.step_daily_trend";
     public static final String DAY_TIME = "day_time";
 
@@ -77,6 +74,15 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
 
         getReactApplicationContext().addLifecycleEventListener(this);
         initSamsungHealth();
+    }
+
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        constants.put("STEP_COUNT", HealthConstants.StepCount.HEALTH_DATA_TYPE);
+        constants.put("WEIGHT", HealthConstants.Weight.HEALTH_DATA_TYPE);
+        constants.put("STEP_DAILY_TREND", SamsungHealthModule.STEP_DAILY_TREND_TYPE);
+        return constants;
     }
 
     @Override
@@ -120,10 +126,16 @@ public class SamsungHealthModule extends ReactContextBaseJavaModule implements
     }
 
     @ReactMethod
-    public void connect(Callback error, Callback success)
+    public void connect(ReadableArray permissions, Callback error, Callback success)
     {
+        // Add permission
+        ConnectionListener listener = new ConnectionListener(this, error, success);
+        for (int i = 0; i < permissions.size(); i++) {
+            listener.addReadPermission(permissions.getString(i));
+        }
+
         // Create a HealthDataStore instance and set its listener
-        mStore = new HealthDataStore(getReactApplicationContext(), new ConnectionListener(this, error, success));
+        mStore = new HealthDataStore(getReactApplicationContext(), listener);
         // Request the connection to the health data store
         mStore.connectService();
     }
