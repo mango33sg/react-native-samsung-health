@@ -136,10 +136,12 @@ class RNSamsungHealth {
 
       return results2;
   }
+}
 
-  STEP_COUNT = samsungHealth.STEP_COUNT;
-  WEIGHT = samsungHealth.WEIGHT;
-  STEP_DAILY_TREND = samsungHealth.STEP_DAILY_TREND;
+if (samsungHealth !== undefined) {
+  RNSamsungHealth.STEP_COUNT = samsungHealth.STEP_COUNT;
+  RNSamsungHealth.WEIGHT = samsungHealth.WEIGHT;
+  RNSamsungHealth.STEP_DAILY_TREND = samsungHealth.STEP_DAILY_TREND;
 }
 
 export default new RNSamsungHealth();
